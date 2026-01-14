@@ -1,0 +1,249 @@
+/* assets/css/styles.css
+   Estilos detalhados para a página refatorada html3/objetivos.html
+   Objetivos:
+   - Layout responsivo com CSS Grid / fallback para dispositivos antigos
+   - Tipografia legível e acessível (contraste, tamanho, espaçamento)
+   - Estados de foco visíveis para navegação por teclado
+   - Estilos de impressão amigáveis
+   - Pequenos utilitários para acessibilidade (sr-only, selection)
+*/
+
+/* Variáveis de tema (fáceis de ajustar) */
+:root{
+  --page-bg: #f2f2f2;
+  --card-bg: #ffffff;
+  --muted: #6b6b6b;
+  --accent: #0b5ed7;    /* azul acessível */
+  --accent-2: #0a6b3b;  /* verde secundário */
+  --text: #111111;
+  --max-width: 1100px;
+  --gutter: 1.25rem;
+  --radius: 10px;
+  --shadow: 0 8px 24px rgba(16,24,40,0.08);
+  --article-min-height: 3.5rem;
+}
+
+/* Reset / base */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  line-height:1.55;
+  color:var(--text);
+  background:linear-gradient(180deg,var(--page-bg),#ececec);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:2rem 1rem;
+  font-size:16px; /* base legível */
+  -webkit-text-size-adjust:100%;
+}
+
+/* Container principal */
+.newspaper{
+  max-width:var(--max-width);
+  margin:0 auto;
+  background:var(--card-bg);
+  padding:2rem;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  counter-reset:article;
+}
+
+/* Cabeçalho semântico */
+.header{
+  text-align:center;
+  margin-bottom:1rem;
+}
+.header h1{
+  margin:.15rem 0 .25rem;
+  font-size:2rem;
+  letter-spacing:0.02em;
+  line-height:1.1;
+}
+.header .subtitle{
+  margin:0;
+  color:var(--muted);
+  font-size:0.95rem;
+}
+
+/* Linha de data / edição */
+.date-line{
+  text-align:center;
+  margin-top:.75rem;
+  margin-bottom:1.25rem;
+  color:var(--muted);
+  font-size:0.95rem;
+}
+.date-line a{
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:600;
+}
+.date-line a:focus, .date-line a:hover{
+  text-decoration:underline;
+}
+
+/* Conteúdo principal e artigos */
+main#content{display:block}
+
+/* Artigo principal em destaque */
+.main-article{
+  margin-bottom:1.25rem;
+  padding-bottom:0.6rem;
+  border-bottom:1px solid #efefef;
+}
+.main-article h2{
+  font-size:1.6rem;
+  margin:0 0 .4rem;
+  text-align:center; /* já retiramos <center> no HTML */
+}
+.byline{
+  font-size:.9rem;
+  color:var(--muted);
+  margin-bottom:.75rem;
+  display:flex;
+  gap:.5rem;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.byline .author{font-weight:600}
+.byline time{font-style:normal}
+
+/* Caixa de destaque (citação) */
+blockquote.highlight-box{
+  border-left:4px solid var(--accent);
+  background:linear-gradient(90deg,#f8fbff,#fff);
+  padding:0.9rem 1rem;
+  margin:1rem 0;
+  border-radius:6px;
+  color:var(--text);
+  font-style:italic;
+}
+blockquote.highlight-box footer{
+  margin-top:.6rem;
+  font-style:normal;
+  font-weight:600;
+  color:var(--muted);
+}
+
+/* Figura / imagem hero com figcaption acessível */
+.hero-image{
+  margin:1rem auto;
+  text-align:center;
+}
+.hero-image img.centered-image{
+  max-width:100%;
+  height:auto;
+  display:block;
+  margin:0 auto;
+  border-radius:6px;
+}
+.hero-image figcaption{
+  font-size:.85rem;
+  color:var(--muted);
+  margin-top:.4rem;
+}
+
+/* Seção de colunas: grid responsivo */
+/* Usamos grid com colunas adaptáveis; evita dependência de JS */
+.columns{
+  display:grid;
+  gap:var(--gutter);
+  grid-template-columns:repeat(3, 1fr);
+  align-items:start;
+}
+
+/* Estrutura dos artigos */
+.article{
+  background:transparent; /* mantém aparência de jornal */
+  padding:0.6rem 0.25rem;
+  min-height:var(--article-min-height);
+}
+.article h3{
+  margin:0 0 .4rem;
+  font-size:1.05rem;
+}
+.article .byline{
+  font-size:.85rem;
+  color:var(--muted);
+  margin-bottom:.5rem;
+  justify-content:flex-start;
+}
+.article p{
+  margin:0 0 0.7rem;
+  font-size:.95rem;
+  color:var(--text);
+}
+
+/* Variantes de tamanho para o grid */
+.article.medium{grid-column:span 2}
+.article.small{grid-column:span 1}
+
+/* Acessibilidade: foco visível para links e botões */
+a, button{
+  color:var(--accent);
+}
+a:focus, a:active, button:focus{
+  outline:3px solid rgba(11,94,215,0.15);
+  outline-offset:3px;
+  box-shadow:0 0 0 3px rgba(11,94,215,0.06);
+}
+
+/* Seleção de texto (visual agradável) */
+::selection{background:var(--accent); color:#fff}
+
+/* Helpers para leitores de tela */
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+
+/* Preferências de redução de movimento */
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important; animation:none!important}
+}
+
+/* Ajustes responsivos finos */
+@media (max-width:1000px){
+  .columns{grid-template-columns:repeat(2,1fr)}
+  .article.medium{grid-column:span 2}
+}
+
+@media (max-width:640px){
+  body{padding:1rem}
+  .newspaper{padding:1.25rem}
+  .columns{grid-template-columns:1fr}
+  .article.medium{grid-column:auto}
+  .article.small{grid-column:auto}
+  .header h1{font-size:1.5rem}
+  .main-article h2{font-size:1.25rem}
+  .byline{justify-content:center}
+}
+
+/* Impressão: economiza tinta, melhora legibilidade */
+@media print{
+  body{background:#fff;padding:0}
+  .newspaper{box-shadow:none;border-radius:0;padding:0.5in}
+  img{max-width:100%;height:auto}
+  .hero-image img{display:none} /* reduz uso de tinta e ocupa menos espaço */
+  .date-line a{color:#000;text-decoration:none}
+  .columns{grid-template-columns:1fr}
+  .footer{page-break-inside:avoid}
+  a[href]:after{content:''} /* remove URLs duplicadas na impressão, opcional */
+}
+
+/* Pequenas melhorias para navegadores antigos (fallbacks) */
+@supports not (display: grid){
+  .columns{display:block}
+  .article{margin-bottom:1rem}
+}
