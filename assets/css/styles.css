@@ -1,0 +1,505 @@
+/* ============================================================
+   Jornal Científico Nacional — Stylesheet
+   Acessibilidade, Usabilidade e Responsividade
+   ============================================================ */
+
+:root {
+    --bg-page: #9d8a6f;
+    --bg-paper: #ead9bd;
+    --bg-paper-soft: #f6efe3;
+    --ink-strong: #1d130c;
+    --ink-normal: #2e2217;
+    --ink-soft: #5a4a3b;
+    --border-strong: #3a2f25;
+    --focus-color: #0b4f9e;
+    --shadow-paper: 0 10px 30px rgba(0, 0, 0, 0.25);
+    --transition-speed: 0.2s ease;
+}
+
+/* ============================================================
+   RESET E ESTILOS BASE
+   ============================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: clamp(14px, 1.5vw, 16px);
+}
+
+body {
+    font-family: "Times New Roman", Georgia, serif;
+    background: linear-gradient(135deg, #b8a082 0%, var(--bg-page) 55%, #8b7758 100%);
+    color: var(--ink-normal);
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: clamp(12px, 2.5vw, 24px);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ============================================================
+   ACESSIBILIDADE
+   ============================================================ */
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    top: -120px;
+    left: 16px;
+    z-index: 9999;
+    background: var(--ink-strong);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    padding: 10px 14px;
+    border-radius: 6px;
+    transition: top var(--transition-speed);
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+    top: 12px;
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+}
+
+/* ============================================================
+   LINKS E INTERATIVIDADE
+   ============================================================ */
+
+a:not(.skip-link) {
+    color: var(--ink-strong);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    border-radius: 4px;
+    transition: color var(--transition-speed),
+                background-color var(--transition-speed),
+                box-shadow var(--transition-speed);
+    cursor: pointer;
+}
+
+a:not(.skip-link):hover {
+    color: #5b2f12;
+    background-color: rgba(29, 19, 12, 0.08);
+    box-shadow: 0 0 0 1px rgba(29, 19, 12, 0.12);
+}
+
+a:not(.skip-link):focus-visible {
+    outline: 3px solid var(--focus-color);
+    outline-offset: 2px;
+    background-color: rgba(29, 19, 12, 0.08);
+}
+
+a:not(.skip-link):active {
+    transform: translateY(1px);
+}
+
+/* ============================================================
+   CONTAINER PRINCIPAL
+   ============================================================ */
+
+.newspaper {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(18px, 3vw, 40px);
+    background: var(--bg-paper);
+    border: 4px double var(--border-strong);
+    box-shadow: var(--shadow-paper);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.header {
+    text-align: center;
+    border-bottom: 4px double var(--border-strong);
+    padding-bottom: clamp(10px, 2vw, 16px);
+    margin-bottom: clamp(12px, 2vw, 18px);
+}
+
+.header h1 {
+    color: var(--ink-strong);
+    font-size: clamp(2rem, 7vw, 5.2rem);
+    line-height: 1.05;
+    letter-spacing: clamp(1px, 0.8vw, 8px);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    font-size: clamp(0.72rem, 1.5vw, 0.9rem);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-soft);
+    font-weight: 600;
+}
+
+/* ============================================================
+   DATA DA PUBLICAÇÃO
+   ============================================================ */
+
+.date-line {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: clamp(6px, 1vw, 12px);
+    text-align: center;
+    border-bottom: 2px solid var(--border-strong);
+    padding-bottom: 10px;
+    margin-bottom: clamp(14px, 2.5vw, 20px);
+    font-size: clamp(0.75rem, 1.5vw, 0.92rem);
+    font-weight: 700;
+    color: var(--ink-normal);
+}
+
+.date-line-item {
+    display: inline-block;
+}
+
+.date-line-item a {
+    display: inline-block;
+    padding: 2px 6px;
+    text-decoration-thickness: 1px;
+}
+
+.date-line-item a:hover,
+.date-line-item a:focus-visible {
+    background-color: rgba(29, 19, 12, 0.08);
+}
+
+.separator {
+    color: var(--ink-soft);
+    font-weight: 400;
+}
+/* ============================================================
+   CONTEÚDO PRINCIPAL
+   ============================================================ */
+
+main {
+    margin-bottom: 24px;
+}
+
+/* ============================================================
+   ARTIGO PRINCIPAL
+   ============================================================ */
+
+.main-article {
+    background: var(--bg-paper-soft);
+    border: 3px double var(--border-strong);
+    padding: clamp(14px, 2.8vw, 24px);
+    margin-bottom: 24px;
+}
+
+.main-article h2 {
+    color: var(--ink-strong);
+    font-size: clamp(1.35rem, 3.2vw, 2rem);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.25;
+    border-bottom: 2px double var(--border-strong);
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+}
+
+.byline {
+    font-size: 0.83rem;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.main-article p,
+.article p {
+    text-align: justify;
+    text-indent: 1.2rem;
+}
+
+.main-article p + p,
+.article p + p {
+    margin-top: 12px;
+}
+
+.main-article p:first-of-type,
+.article p:first-of-type {
+    text-indent: 1.2rem;
+}
+
+/* ============================================================
+   DESTAQUE E CITAÇÕES
+   ============================================================ */
+
+.highlight-box {
+    margin: 16px 0;
+    padding: 14px 16px;
+    border-left: 4px solid var(--border-strong);
+    background: #fbf3df;
+    font-style: italic;
+    color: var(--ink-normal);
+    line-height: 1.65;
+}
+
+.highlight-box cite {
+    display: block;
+    margin-top: 10px;
+    font-style: normal;
+    font-weight: 700;
+    color: var(--ink-soft);
+}
+
+/* ============================================================
+   IMAGENS
+   ============================================================ */
+
+figure {
+    margin: 0;
+}
+
+.image-wrap {
+    margin: clamp(16px, 3vw, 26px) auto;
+    text-align: center;
+}
+
+.centered-image {
+    margin: 0 auto;
+    border: 3px double var(--border-strong);
+    max-width: 100%;
+    height: auto;
+}
+
+figcaption {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    text-align: center;
+    font-style: italic;
+}
+
+/* ============================================================
+   GRID DE ARTIGOS
+   ============================================================ */
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 20px);
+    margin-bottom: 24px;
+}
+
+.article {
+    border-top: 1px solid var(--border-strong);
+    padding-top: 14px;
+}
+
+.article h3 {
+    color: var(--ink-strong);
+    text-transform: uppercase;
+    line-height: 1.25;
+    margin-bottom: 8px;
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+}
+
+.article.medium h3 {
+    font-size: clamp(0.95rem, 2vw, 1.08rem);
+}
+
+.article.small h3 {
+    font-size: clamp(0.92rem, 1.9vw, 1rem);
+}
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+
+.footer {
+    text-align: center;
+    border-top: 4px double var(--border-strong);
+    padding-top: 14px;
+    color: var(--ink-normal);
+    font-size: clamp(0.8rem, 1.2vw, 0.86rem);
+}
+
+.footer p {
+    margin-bottom: 6px;
+}
+
+.footer p:last-child {
+    margin-bottom: 0;
+}
+
+
+/* ============================================================
+   RESPONSIVIDADE: TABLETS (até 960px)
+   ============================================================ */
+
+@media (max-width: 960px) {
+    .columns {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .newspaper {
+        padding: clamp(14px, 2.5vw, 30px);
+    }
+}
+
+/* ============================================================
+   RESPONSIVIDADE: SMARTPHONES (até 680px)
+   ============================================================ */
+
+@media (max-width: 680px) {
+    .columns {
+        grid-template-columns: 1fr;
+    }
+
+    .main-article p,
+    .article p {
+        font-size: 0.98rem;
+    }
+
+    .newspaper {
+        border-width: 3px;
+        padding: clamp(12px, 2vw, 24px);
+    }
+
+    .date-line {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .separator {
+        display: none;
+    }
+}
+
+/* ============================================================
+   RESPONSIVIDADE: PEQUENAS TELAS (até 480px)
+   ============================================================ */
+
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        line-height: 1.6;
+        padding: clamp(8px, 2vw, 16px);
+    }
+
+    .subtitle,
+    .byline {
+        letter-spacing: 0.4px;
+    }
+
+    .newspaper {
+        border-width: 2px;
+        padding: clamp(10px, 2vw, 18px);
+    }
+
+    .header {
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .header h1 {
+        letter-spacing: 0.5px;
+    }
+
+    .main-article {
+        padding: clamp(10px, 2vw, 16px);
+        border-width: 2px;
+    }
+
+    .highlight-box {
+        margin: 12px 0;
+        padding: 12px 12px;
+        border-left-width: 3px;
+    }
+
+    .date-line {
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+    }
+
+    .article {
+        border-top-width: 1px;
+    }
+
+    .footer {
+        padding-top: 10px;
+        border-top-width: 3px;
+    }
+}
+
+/* ============================================================
+   PREFERÊNCIAS DO USUÁRIO
+   ============================================================ */
+
+/* Respeitar preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Suporte para modo escuro (futuro aprimoramento) */
+@media (prefers-color-scheme: dark) {
+    /* Mantém cores atuais por compatibilidade com design vintage */
+    /* Pode ser customizado conforme necessário */
+}
+
+/* ============================================================
+   IMPRESSÃO
+   ============================================================ */
+
+@media print {
+    body {
+        background: #ffffff;
+        padding: 0;
+    }
+
+    .newspaper {
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .skip-link {
+        display: none;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+
+    a:visited {
+        color: var(--ink-strong);
+    }
+}
