@@ -31,8 +31,18 @@ def build_crew() -> Crew:
 
 
 def run() -> None:
-    load_dotenv(Path(__file__).with_name(".env"))
-    result = build_crew().kickoff()
+    env_path = Path(__file__).with_name(".env")
+    if not env_path.exists():
+        raise SystemExit(
+            "Arquivo de ambiente não encontrado. Crie 'crewai_agent/.env' com a OPENAI_API_KEY."
+        )
+
+    load_dotenv(env_path)
+    try:
+        result = build_crew().kickoff()
+    except Exception as exc:
+        raise SystemExit(f"Falha ao executar o CrewAI: {exc}") from exc
+
     print(result)
 
 
