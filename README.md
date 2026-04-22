@@ -121,7 +121,7 @@ crewai_agent/main.py
 
 ### Como executar
 
-1. Tenha Python 3.10+ instalado
+1. Tenha Python 3.10+ (mínimo recomendado; confirme também os requisitos atuais do CrewAI na documentação oficial)
 2. Instale dependências:
 
 ```bash

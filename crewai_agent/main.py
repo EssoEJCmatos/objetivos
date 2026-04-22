@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from dotenv import load_dotenv
+import os
 from pathlib import Path
 
 
@@ -38,6 +39,10 @@ def run() -> None:
         )
 
     load_dotenv(env_path)
+    if not os.getenv("OPENAI_API_KEY"):
+        raise SystemExit(
+            "OPENAI_API_KEY não definida em 'crewai_agent/.env'."
+        )
     try:
         result = build_crew().kickoff()
     except Exception as exc:
