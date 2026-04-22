@@ -79,8 +79,8 @@ class DocodexTool(BaseTool):
             return "[Docodex] A requisição excedeu o tempo limite."
         except requests.exceptions.HTTPError as exc:
             return f"[Docodex] Erro HTTP: {exc.response.status_code} — {exc.response.text}"
-        except Exception as exc:  # noqa: BLE001
-            return f"[Docodex] Erro inesperado: {exc}"
+        except (ValueError, KeyError) as exc:
+            return f"[Docodex] Erro ao processar resposta: {exc}"
 
     @staticmethod
     def _format_results(data: dict) -> str:

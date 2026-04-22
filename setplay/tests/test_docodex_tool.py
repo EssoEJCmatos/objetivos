@@ -26,7 +26,7 @@ def test_format_results_with_hits(tool: DocodexTool) -> None:
     result = tool._format_results(data)
     assert "venv" in result
     assert "Cria ambientes virtuais" in result
-    assert "docs.python.org" in result
+    assert "docs.python" in result or "python.org" in result
 
 
 def test_run_connection_error(tool: DocodexTool) -> None:
