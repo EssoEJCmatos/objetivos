@@ -1,7 +1,8 @@
-from crewai import Agent, Crew, Process, Task
-from dotenv import load_dotenv
 import os
 from pathlib import Path
+
+from crewai import Agent, Crew, Process, Task
+from dotenv import load_dotenv
 
 
 def build_crew() -> Crew:

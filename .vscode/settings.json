@@ -7,7 +7,7 @@
   "html.format.enable": true,
   "css.validate": true,
   "[python]": {
-    "editor.defaultFormatter": "ms-python.python",
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true
   },
   "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",

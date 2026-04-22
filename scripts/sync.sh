@@ -7,7 +7,7 @@ set -euo pipefail
 ROOT_DIR="$(git -C "$(dirname "$0")" rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-MSG="${1:-"chore: atualização automática via sync.sh [$(date '+%Y-%m-%d %H:%M')]"}"
+MSG="${1:-"chore: atualização automática via sync.sh"}"
 
 echo "==> Adicionando alterações..."
 git add .

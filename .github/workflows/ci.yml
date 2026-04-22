@@ -23,8 +23,9 @@ jobs:
 
       - name: Verificar sintaxe Python
         run: |
-          if find . -name "*.py" | grep -q .; then
-            python -m py_compile crewai_agent/main.py && echo "✅ Sintaxe Python OK"
+          PY_FILES=$(find . -name "*.py" ! -path "./.venv/*")
+          if [ -n "$PY_FILES" ]; then
+            echo "$PY_FILES" | xargs python -m py_compile && echo "✅ Sintaxe Python OK"
           fi
 
       - name: Validar HTML com vnu
