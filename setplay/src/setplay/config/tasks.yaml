@@ -1,0 +1,29 @@
+research_task:
+  description: >
+    Analise a seguinte pergunta técnica e identifique os conceitos-chave,
+    linguagens e frameworks envolvidos:
+
+    "{question}"
+
+    Liste os termos principais e forneça contexto sobre o que será necessário
+    buscar na documentação para responder à pergunta.
+  expected_output: >
+    Um resumo estruturado com: (1) termos-chave identificados,
+    (2) linguagem/framework principal, (3) sub-tópicos relevantes para a busca.
+  agent: researcher_agent
+
+documentation_task:
+  description: >
+    Com base na análise fornecida pelo pesquisador, utilize a ferramenta
+    Docodex para buscar a documentação oficial e responda à pergunta:
+
+    "{question}"
+
+    Cite as fontes encontradas e forneça exemplos de código quando disponíveis.
+  expected_output: >
+    Uma resposta técnica completa e precisa, incluindo:
+    (1) explicação clara do conceito, (2) exemplos práticos de código,
+    (3) referências às fontes oficiais consultadas.
+  agent: docodex_agent
+  context:
+    - research_task
