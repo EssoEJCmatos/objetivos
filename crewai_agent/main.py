@@ -1,5 +1,6 @@
 from crewai import Agent, Crew, Process, Task
 from dotenv import load_dotenv
+from pathlib import Path
 
 
 def build_crew() -> Crew:
@@ -30,7 +31,7 @@ def build_crew() -> Crew:
 
 
 def run() -> None:
-    load_dotenv()
+    load_dotenv(Path(__file__).with_name(".env"))
     result = build_crew().kickoff()
     print(result)
 

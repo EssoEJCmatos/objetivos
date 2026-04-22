@@ -131,10 +131,10 @@ pip install crewai python-dotenv
 3. Crie o arquivo de ambiente:
 
 ```bash
-cp crewai_agent/.env.example .env
+cp crewai_agent/.env.example crewai_agent/.env
 ```
 
-4. Configure sua chave no `.env` (ex.: `OPENAI_API_KEY`)
+4. Configure sua chave no `crewai_agent/.env` (ex.: `OPENAI_API_KEY`)
 5. Execute:
 
 ```bash
