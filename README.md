@@ -111,6 +111,38 @@ html3/
 - **CSS3** — Variáveis CSS, Grid, Flexbox, Media Queries
 - **Sem dependências externas** — Código puro e performático
 
+## 🤖 Integração com agente CrewAI
+
+Foi adicionada uma integração mínima de agente em:
+
+```
+crewai_agent/main.py
+```
+
+### Como executar
+
+1. Tenha Python 3.10+ instalado
+2. Instale dependências:
+
+```bash
+pip install crewai python-dotenv
+```
+
+3. Crie o arquivo de ambiente:
+
+```bash
+cp crewai_agent/.env.example .env
+```
+
+4. Configure sua chave no `.env` (ex.: `OPENAI_API_KEY`)
+5. Execute:
+
+```bash
+python crewai_agent/main.py
+```
+
+Esse agente gera um resumo curto em português para apoiar atualizações editoriais do projeto.
+
 ## 📊 Performance e Otimizações
 
 - ✅ Imagem com `loading="lazy"` para lazy loading
