@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ritwickdey.LiveServer",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "GitHub.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "ms-azuretools.vscode-docker"
+  ]
+}

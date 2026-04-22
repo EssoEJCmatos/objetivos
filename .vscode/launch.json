@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Executar agente CrewAI",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/crewai_agent/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/crewai_agent/.env"
+    },
+    {
+      "name": "Abrir página no Live Server",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "live-server",
+      "args": ["${workspaceFolder}/objetivos.html"],
+      "console": "integratedTerminal"
+    }
+  ]
+}

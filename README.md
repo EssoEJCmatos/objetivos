@@ -143,6 +143,70 @@ python crewai_agent/main.py
 
 Esse agente gera um resumo curto em português para apoiar atualizações editoriais do projeto.
 
+## 💻 Configuração do VS Code
+
+O repositório inclui configuração pronta em `.vscode/` para abrir e desenvolver diretamente no VS Code.
+
+### Extensões recomendadas (instaladas automaticamente pelo VS Code)
+
+| Extensão | Finalidade |
+|----------|-----------|
+| Live Server | Servir `objetivos.html` com recarregamento automático |
+| Python + Pylance | Desenvolvimento e depuração do agente CrewAI |
+| GitLens | Histórico e anotações Git avançadas |
+| GitHub Pull Requests | Gerenciar PRs sem sair do editor |
+
+### Tarefas disponíveis (`Ctrl+Shift+B`)
+
+- **Sincronizar com GitHub** — executa `scripts/sync.sh` (commit + push automático)
+- **Instalar dependências CrewAI** — instala `crewai` e `python-dotenv`
+
+### Debug (`F5`)
+
+- **Executar agente CrewAI** — inicia `crewai_agent/main.py` no terminal integrado com `.env` carregado
+
+### Sincronização automática via terminal
+
+```bash
+# Commita todas as alterações e envia para o GitHub em um comando:
+./scripts/sync.sh "sua mensagem aqui"
+```
+
+## ⚙️ CI — GitHub Actions
+
+O workflow `.github/workflows/ci.yml` executa automaticamente a cada `push`:
+
+1. **Validação de sintaxe Python** — verifica `crewai_agent/main.py`
+2. **Validação de HTML** — verifica `objetivos.html` com o validador oficial W3C
+3. **Auto-atualização de data no README** — atualiza "Última atualização" em merges para `main`/`master`
+
+Nenhuma configuração extra é necessária: o workflow usa o token `GITHUB_TOKEN` já disponível no repositório.
+
+## 📁 Estrutura de Pastas (atualizada)
+
+```
+objetivos/
+├── objetivos.html          # Documento HTML semântico
+├── README.md               # Este arquivo
+├── .gitignore              # Ignorar artefatos Python e .env
+├── assets/
+│   ├── css/styles.css      # Stylesheet único e organizado
+│   └── imagem/peb.png      # Imagem histórica
+├── crewai_agent/
+│   ├── main.py             # Agente CrewAI
+│   └── .env.example        # Exemplo de configuração de ambiente
+├── scripts/
+│   └── sync.sh             # Script de commit + push rápido
+├── .vscode/
+│   ├── settings.json       # Configurações do editor
+│   ├── extensions.json     # Extensões recomendadas
+│   ├── launch.json         # Configurações de depuração
+│   └── tasks.json          # Tarefas de build/sync
+└── .github/
+    └── workflows/
+        └── ci.yml          # Pipeline de CI/CD
+```
+
 ## 📊 Performance e Otimizações
 
 - ✅ Imagem com `loading="lazy"` para lazy loading
