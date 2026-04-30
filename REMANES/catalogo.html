@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Catálogo completo de publicações, ferramentas e documentação do projeto Jornal Científico Nacional." />
+  <meta name="author" content="Redação Científica" />
+  <meta name="theme-color" content="#9d8a6f" />
+  <title>Catálogo — Jornal Científico Nacional</title>
+  <style>
+    /* ============================================================
+       RESET E VARIÁVEIS
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-page:        #9d8a6f;
+      --bg-paper:       #ead9bd;
+      --bg-paper-soft:  #f6efe3;
+      --bg-card:        #fdf6e9;
+      --bg-card-hover:  #fff8ee;
+      --ink-strong:     #1d130c;
+      --ink-normal:     #2e2217;
+      --ink-soft:       #5a4a3b;
+      --border-strong:  #3a2f25;
+      --border-soft:    #c8b89a;
+      --focus-color:    #0b4f9e;
+      --accent:         #7a3b10;
+      --accent-light:   #a0522d;
+      --badge-green:    #2d6a2d;
+      --badge-blue:     #1a4d8f;
+      --badge-gold:     #7a5c10;
+      --badge-red:      #7a1010;
+      --shadow-paper:   0 10px 30px rgba(0,0,0,0.25);
+      --shadow-card:    0 2px 8px rgba(58,47,37,0.15);
+      --shadow-card-hover: 0 6px 20px rgba(58,47,37,0.28);
+      --transition:     0.2s ease;
+      --radius:         4px;
+    }
+
+    html { scroll-behavior: smooth; font-size: clamp(14px, 1.5vw, 16px); }
+
+    body {
+      font-family: "Times New Roman", Georgia, serif;
+      background: linear-gradient(135deg, #b8a082 0%, var(--bg-page) 55%, #8b7758 100%);
+      color: var(--ink-normal);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: clamp(12px, 2.5vw, 24px);
+    }
+
+    img { max-width: 100%; height: auto; display: block; }
+
+    /* ============================================================
+       ACESSIBILIDADE
+       ============================================================ */
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    .skip-link {
+      position: absolute; top: -120px; left: 16px; z-index: 9999;
+      background: var(--ink-strong); color: #fff; text-decoration: none;
+      font-weight: 700; padding: 10px 14px; border-radius: 6px;
+      transition: top var(--transition);
+    }
+    .skip-link:focus, .skip-link:focus-visible { top: 12px; outline: 3px solid var(--focus-color); outline-offset: 2px; }
+
+    /* ============================================================
+       LINKS
+       ============================================================ */
+    a {
+      color: var(--ink-strong); text-decoration: underline;
+      text-decoration-thickness: 1px; text-underline-offset: 3px;
+      border-radius: var(--radius); transition: color var(--transition), background-color var(--transition);
+      cursor: pointer;
+    }
+    a:hover { color: var(--accent); background-color: rgba(29,19,12,0.06); }
+    a:focus-visible { outline: 3px solid var(--focus-color); outline-offset: 2px; background-color: rgba(29,19,12,0.08); }
+    a:active { transform: translateY(1px); }
+
+    /* ============================================================
+       CONTAINER PRINCIPAL
+       ============================================================ */
+    .newspaper {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: clamp(18px, 3vw, 40px);
+      background: var(--bg-paper);
+      border: 4px double var(--border-strong);
+      box-shadow: var(--shadow-paper);
+    }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .header {
+      text-align: center;
+      border-bottom: 4px double var(--border-strong);
+      padding-bottom: clamp(10px, 2vw, 16px);
+      margin-bottom: clamp(12px, 2vw, 18px);
+    }
+
+    .header h1 {
+      color: var(--ink-strong);
+      font-size: clamp(2rem, 7vw, 5.2rem);
+      line-height: 1.05;
+      letter-spacing: clamp(1px, 0.8vw, 8px);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: clamp(0.72rem, 1.5vw, 0.9rem);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-soft);
+      font-weight: 600;
+    }
+
+    /* ============================================================
+       BARRA DE DATA / NAV
+       ============================================================ */
+    .date-line {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: clamp(6px, 1vw, 12px);
+      text-align: center;
+      border-bottom: 2px solid var(--border-strong);
+      padding-bottom: 10px;
+      margin-bottom: clamp(14px, 2.5vw, 20px);
+      font-size: clamp(0.75rem, 1.5vw, 0.92rem);
+      font-weight: 700;
+      color: var(--ink-normal);
+    }
+
+    .date-line-item { display: inline-block; }
+    .date-line-item a { display: inline-block; padding: 2px 6px; text-decoration-thickness: 1px; }
+    .date-line-item a:hover, .date-line-item a:focus-visible { background-color: rgba(29,19,12,0.08); }
+    .separator { color: var(--ink-soft); font-weight: 400; }
+
+    /* ============================================================
+       BARRA DE FERRAMENTAS (pesquisa + filtros)
+       ============================================================ */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: var(--bg-paper-soft);
+      border: 2px double var(--border-strong);
+      padding: 14px 16px;
+    }
+
+    .toolbar-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-soft);
+      flex-shrink: 0;
+    }
+
+    .search-wrap {
+      flex: 1;
+      min-width: 180px;
+      position: relative;
+    }
+
+    .search-wrap label {
+      position: absolute;
+      left: -9999px;
+    }
+
+    #search-input {
+      width: 100%;
+      padding: 7px 10px 7px 32px;
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      color: var(--ink-normal);
+      font-family: inherit;
+      font-size: 0.88rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    #search-input:focus {
+      outline: none;
+      border-color: var(--focus-color);
+      box-shadow: 0 0 0 3px rgba(11,79,158,0.18);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--ink-soft);
+      pointer-events: none;
+      font-size: 0.9rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .filter-btn {
+      padding: 5px 12px;
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      background: var(--bg-card);
+      color: var(--ink-soft);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), color var(--transition);
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover { background: #f0e6d0; border-color: var(--border-strong); color: var(--ink-strong); }
+    .filter-btn.active { background: var(--ink-strong); border-color: var(--ink-strong); color: var(--bg-paper); }
+    .filter-btn:focus-visible { outline: 3px solid var(--focus-color); outline-offset: 2px; }
+
+    .sort-select {
+      padding: 6px 10px;
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      color: var(--ink-normal);
+      font-family: inherit;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: border-color var(--transition);
+    }
+
+    .sort-select:focus {
+      outline: none;
+      border-color: var(--focus-color);
+      box-shadow: 0 0 0 3px rgba(11,79,158,0.18);
+    }
+
+    .results-count {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* ============================================================
+       GRADE DE CARDS
+       ============================================================ */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(14px, 2vw, 22px);
+      margin-bottom: 28px;
+    }
+
+    /* Mensagem de estado vazio */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--ink-soft);
+    }
+
+    .empty-state p { font-size: 1.05rem; margin-bottom: 8px; }
+    .empty-state small { font-size: 0.85rem; }
+
+    /* Card individual */
+    .catalog-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-soft);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+      overflow: hidden;
+    }
+
+    .catalog-card:hover {
+      box-shadow: var(--shadow-card-hover);
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+    }
+
+    .catalog-card[hidden] { display: none; }
+
+    /* Faixa de categoria no topo do card */
+    .card-strip {
+      height: 4px;
+      background: var(--border-strong);
+    }
+
+    .card-strip.strip-artigo    { background: #7a3b10; }
+    .card-strip.strip-ferramenta { background: #1a4d8f; }
+    .card-strip.strip-documento  { background: #2d6a2d; }
+    .card-strip.strip-prompt     { background: #7a1010; }
+
+    .card-body {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+      font-weight: 700;
+      color: var(--ink-strong);
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .card-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 2px 7px;
+      border-radius: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .badge-artigo    { background: #f5e6d8; color: var(--accent); border: 1px solid #d4a88a; }
+    .badge-ferramenta { background: #dce8fa; color: var(--badge-blue); border: 1px solid #9ab8e0; }
+    .badge-documento  { background: #dcf0dc; color: var(--badge-green); border: 1px solid #8ac08a; }
+    .badge-prompt    { background: #fce8e8; color: var(--badge-red); border: 1px solid #e0aaaa; }
+
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--ink-soft);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-desc {
+      font-size: 0.84rem;
+      color: var(--ink-normal);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .tag {
+      font-size: 0.68rem;
+      background: rgba(58,47,37,0.08);
+      color: var(--ink-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: 3px;
+      padding: 1px 6px;
+    }
+
+    .card-footer {
+      padding: 10px 16px 14px;
+      border-top: 1px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .card-date {
+      font-size: 0.73rem;
+      color: var(--ink-soft);
+      font-style: italic;
+    }
+
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid currentColor;
+      border-radius: var(--radius);
+      padding: 4px 10px;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .card-link:hover { background: var(--accent); color: var(--bg-paper); }
+    .card-link:focus-visible { outline: 3px solid var(--focus-color); outline-offset: 2px; }
+
+    /* ============================================================
+       RODAPÉ
+       ============================================================ */
+    .footer {
+      text-align: center;
+      border-top: 4px double var(--border-strong);
+      padding-top: 14px;
+      color: var(--ink-normal);
+      font-size: clamp(0.8rem, 1.2vw, 0.86rem);
+    }
+
+    .footer p { margin-bottom: 6px; }
+    .footer p:last-child { margin-bottom: 0; }
+
+    /* ============================================================
+       RESPONSIVIDADE
+       ============================================================ */
+    @media (max-width: 960px) {
+      .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .newspaper { padding: clamp(14px, 2.5vw, 30px); }
+    }
+
+    @media (max-width: 680px) {
+      .catalog-grid { grid-template-columns: 1fr; }
+      .newspaper { border-width: 3px; padding: clamp(12px, 2vw, 24px); }
+      .date-line { flex-direction: column; gap: 8px; }
+      .separator { display: none; }
+      .toolbar { flex-direction: column; align-items: flex-start; }
+      .results-count { margin-left: 0; }
+      .filter-group { width: 100%; }
+    }
+
+    @media (max-width: 480px) {
+      html { font-size: 14px; }
+      body { line-height: 1.6; padding: clamp(8px, 2vw, 16px); }
+      .subtitle, .card-meta { letter-spacing: 0.4px; }
+      .newspaper { border-width: 2px; padding: clamp(10px, 2vw, 18px); }
+      .header { padding-bottom: 10px; margin-bottom: 10px; }
+      .header h1 { letter-spacing: 0.5px; }
+      .footer { padding-top: 10px; border-top-width: 3px; }
+    }
+
+    /* ============================================================
+       PREFERÊNCIAS DO USUÁRIO
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .newspaper { box-shadow: none; max-width: 100%; }
+      .skip-link, .toolbar { display: none; }
+      a { text-decoration: underline; }
+      a:visited { color: var(--ink-strong); }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#catalogo-principal">Pular para o catálogo</a>
+
+  <div class="newspaper">
+
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <h1>Jornal Científico Nacional</h1>
+      <p class="subtitle">Catálogo de Publicações, Ferramentas e Documentação</p>
+    </header>
+
+    <!-- ===== BARRA DE DATA / NAV ===== -->
+    <div class="date-line" role="navigation" aria-label="Navegação principal">
+      <strong class="date-line-item">
+        <a href="../seteplayORIG/objetivos.html" title="Ir para a edição principal">Edição Especial 1950-1960</a>
+      </strong>
+      <span class="separator" aria-hidden="true">|</span>
+      <span class="date-line-item">
+        <a href="multimodal-stack/player.html" title="Abrir o player multimodal">Player Multimodal</a>
+      </span>
+      <span class="separator" aria-hidden="true">|</span>
+      <span class="date-line-item">
+        <a href="multimodal-stack/ARCHITECTURE.md" title="Ver documento de arquitetura">Arquitetura</a>
+      </span>
+      <span class="separator" aria-hidden="true">|</span>
+      <span class="date-line-item">
+        <a href="https://github.com/EssoEJCmatos/objetivos" target="_blank" rel="noopener noreferrer" title="Abrir repositório no GitHub" aria-label="Repositório no GitHub (abre em nova aba)">GitHub ↗</a>
+      </span>
+    </div>
+
+    <!-- ===== BARRA DE FERRAMENTAS ===== -->
+    <div class="toolbar" role="search" aria-label="Pesquisa e filtros do catálogo">
+      <span class="toolbar-title" aria-hidden="true">📋 Catálogo</span>
+
+      <div class="search-wrap">
+        <label for="search-input">Pesquisar no catálogo</label>
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="Pesquisar por título, tag ou descrição…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="Pesquisar no catálogo"
+          aria-controls="catalogo-principal"
+          aria-describedby="results-count"
+        />
+      </div>
+
+      <div class="filter-group" role="group" aria-label="Filtrar por categoria">
+        <button class="filter-btn active" data-filter="todos" aria-pressed="true">Todos</button>
+        <button class="filter-btn" data-filter="artigo"      aria-pressed="false">📄 Artigos</button>
+        <button class="filter-btn" data-filter="ferramenta"  aria-pressed="false">🔧 Ferramentas</button>
+        <button class="filter-btn" data-filter="documento"   aria-pressed="false">📚 Documentação</button>
+        <button class="filter-btn" data-filter="prompt"      aria-pressed="false">🤖 Prompts</button>
+      </div>
+
+      <label for="sort-select" class="visually-hidden">Ordenar por</label>
+      <select id="sort-select" class="sort-select" aria-label="Ordenar itens do catálogo">
+        <option value="default">Ordenar: Padrão</option>
+        <option value="az">Título A–Z</option>
+        <option value="za">Título Z–A</option>
+        <option value="cat">Categoria</option>
+      </select>
+
+      <span class="results-count" id="results-count" aria-live="polite" aria-atomic="true">
+        <span id="count-number">0</span> iten(s) encontrado(s)
+      </span>
+    </div>
+
+    <!-- ===== GRADE DE CARDS ===== -->
+    <main id="catalogo-principal" aria-label="Catálogo de itens">
+      <div class="catalog-grid" id="catalog-grid" role="list">
+
+        <!-- ── ARTIGOS ── -->
+
+        <article class="catalog-card"
+          data-category="artigo"
+          data-title="Perfil Científico: Ericsson — Excelência Profissional"
+          data-date="1958"
+          data-tags="ericsson organização ciência equipe"
+          role="listitem"
+        >
+          <div class="card-strip strip-artigo"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Perfil Científico: Ericsson</h2>
+              <span class="card-badge badge-artigo">Artigo</span>
+            </div>
+            <p class="card-meta">Redação Científica · 1958</p>
+            <p class="card-desc">
+              Estudo aprofundado sobre o perfil profissional de Ericsson: organização metodológica,
+              prestabilidade, companheirismo e capacidade de trabalho em equipe como pilares da excelência científica.
+            </p>
+            <div class="card-tags">
+              <span class="tag">organização</span>
+              <span class="tag">equipe</span>
+              <span class="tag">excelência</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Publicado em 1958</span>
+            <a class="card-link" href="../seteplayORIG/objetivos.html#titulo-principal" aria-label="Ler artigo sobre perfil científico de Ericsson">Ler artigo →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="artigo"
+          data-title="Organização Metodológica: A Chave do Sucesso Científico"
+          data-date="1956"
+          data-tags="organização metodologia ciência reprodutibilidade"
+          role="listitem"
+        >
+          <div class="card-strip strip-artigo"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Organização Metodológica</h2>
+              <span class="card-badge badge-artigo">Artigo</span>
+            </div>
+            <p class="card-meta">Análise Comportamental · 1956</p>
+            <p class="card-desc">
+              Estudo sobre como a organização sistemática de dados e procedimentos é fundamental para
+              a reprodutibilidade científica e a qualidade dos resultados.
+            </p>
+            <div class="card-tags">
+              <span class="tag">metodologia</span>
+              <span class="tag">reprodutibilidade</span>
+              <span class="tag">organização</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Publicado em 1956</span>
+            <a class="card-link" href="../seteplayORIG/objetivos.html" aria-label="Ler artigo sobre organização metodológica">Ler artigo →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="artigo"
+          data-title="Prestabilidade no Ambiente Científico"
+          data-date="1957"
+          data-tags="prestabilidade colaboração dinâmica equipes ciência"
+          role="listitem"
+        >
+          <div class="card-strip strip-artigo"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Prestabilidade no Ambiente Científico</h2>
+              <span class="card-badge badge-artigo">Artigo</span>
+            </div>
+            <p class="card-meta">Pesquisa em Dinâmica de Equipes · 1957</p>
+            <p class="card-desc">
+              A prestabilidade profissional como fator crítico para o avanço científico. Profissionais
+              prestativos facilitam a comunicação entre membros da equipe e aceleram a resolução de problemas.
+            </p>
+            <div class="card-tags">
+              <span class="tag">colaboração</span>
+              <span class="tag">produtividade</span>
+              <span class="tag">comunicação</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Publicado em 1957</span>
+            <a class="card-link" href="../seteplayORIG/objetivos.html" aria-label="Ler artigo sobre prestabilidade científica">Ler artigo →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="artigo"
+          data-title="Trabalho em Equipe: Fundamentos Científicos"
+          data-date="1959"
+          data-tags="equipe colaboração sociologia ciência"
+          role="listitem"
+        >
+          <div class="card-strip strip-artigo"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Trabalho em Equipe: Fundamentos</h2>
+              <span class="card-badge badge-artigo">Artigo</span>
+            </div>
+            <p class="card-meta">Sociologia da Ciência · 1959</p>
+            <p class="card-desc">
+              O trabalho em equipe eficaz requer profissionais que compreendam a importância da colaboração.
+              Princípios essenciais para o progresso científico moderno.
+            </p>
+            <div class="card-tags">
+              <span class="tag">sociologia</span>
+              <span class="tag">equipe</span>
+              <span class="tag">fundamentos</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Publicado em 1959</span>
+            <a class="card-link" href="../seteplayORIG/objetivos.html" aria-label="Ler artigo sobre trabalho em equipe">Ler artigo →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="artigo"
+          data-title="Companheirismo: Fator de Coesão Científica"
+          data-date="1955"
+          data-tags="companheirismo coesão psicologia organizacional equipe"
+          role="listitem"
+        >
+          <div class="card-strip strip-artigo"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Companheirismo: Coesão Científica</h2>
+              <span class="card-badge badge-artigo">Artigo</span>
+            </div>
+            <p class="card-meta">Psicologia Organizacional · 1955</p>
+            <p class="card-desc">
+              O companheirismo como elemento estrutural do sucesso científico. Equipes com alto índice
+              de companheirismo apresentam menor rotatividade e resultados mais consistentes.
+            </p>
+            <div class="card-tags">
+              <span class="tag">psicologia</span>
+              <span class="tag">coesão</span>
+              <span class="tag">satisfação</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Publicado em 1955</span>
+            <a class="card-link" href="../seteplayORIG/objetivos.html" aria-label="Ler artigo sobre companheirismo científico">Ler artigo →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="artigo"
+          data-title="Expectativas Futuras: Visão Científica e Tecnológica"
+          data-date="1960"
+          data-tags="futuro tecnologia projeções inovação visão"
+          role="listitem"
+        >
+          <div class="card-strip strip-artigo"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Expectativas Futuras</h2>
+              <span class="card-badge badge-artigo">Artigo</span>
+            </div>
+            <p class="card-meta">Projeções Científicas · 1960</p>
+            <p class="card-desc">
+              Expectativas profissionais de Ericsson alinhadas com as tendências científicas e tecnológicas
+              da segunda metade do século XX. Profissionais liderando inovações em diversas áreas.
+            </p>
+            <div class="card-tags">
+              <span class="tag">inovação</span>
+              <span class="tag">projeções</span>
+              <span class="tag">tecnologia</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Publicado em 1960</span>
+            <a class="card-link" href="../seteplayORIG/objetivos.html" aria-label="Ler artigo sobre expectativas futuras">Ler artigo →</a>
+          </div>
+        </article>
+
+        <!-- ── FERRAMENTAS ── -->
+
+        <article class="catalog-card"
+          data-category="ferramenta"
+          data-title="Player Multimodal — YOLOv8 + CrewAI"
+          data-date="2026"
+          data-tags="player vídeo yolov8 crewai análise multimodal detecção"
+          role="listitem"
+        >
+          <div class="card-strip strip-ferramenta"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Player Multimodal</h2>
+              <span class="card-badge badge-ferramenta">Ferramenta</span>
+            </div>
+            <p class="card-meta">YOLOv8 · CrewAI · OpenCV · Whisper · 2026</p>
+            <p class="card-desc">
+              Interface web para análise de vídeo com pipeline multi-agente: detecção (YOLOv8),
+              rastreamento (DeepSORT), áudio (Whisper), análise semântica (LLM) e geração de relatórios.
+            </p>
+            <div class="card-tags">
+              <span class="tag">YOLOv8</span>
+              <span class="tag">CrewAI</span>
+              <span class="tag">Whisper</span>
+              <span class="tag">LLM</span>
+              <span class="tag">DeepSORT</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Versão 1.0 · 2026</span>
+            <a class="card-link" href="multimodal-stack/player.html" aria-label="Abrir o player multimodal">Abrir →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="ferramenta"
+          data-title="SetplayCrew — Agente CrewAI para Documentação"
+          data-date="2026"
+          data-tags="crewai agente documentação setplay docodex python"
+          role="listitem"
+        >
+          <div class="card-strip strip-ferramenta"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">SetplayCrew</h2>
+              <span class="card-badge badge-ferramenta">Ferramenta</span>
+            </div>
+            <p class="card-meta">CrewAI · Python · Docodex · 2026</p>
+            <p class="card-desc">
+              Crew multi-agente para consultoria técnica com suporte a documentação via Docodex.
+              Agentes: Researcher (contexto) e Docodex (documentação oficial).
+            </p>
+            <div class="card-tags">
+              <span class="tag">CrewAI</span>
+              <span class="tag">Python</span>
+              <span class="tag">Docodex</span>
+              <span class="tag">multi-agente</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Versão 1.0 · 2026</span>
+            <a class="card-link" href="../seteplayORIG/src/setplay/crew.py" aria-label="Ver código do SetplayCrew">Ver código →</a>
+          </div>
+        </article>
+
+        <!-- ── DOCUMENTAÇÃO ── -->
+
+        <article class="catalog-card"
+          data-category="documento"
+          data-title="ARCHITECTURE.md — Stack Multimodal YOLOv8 + CrewAI"
+          data-date="2026"
+          data-tags="arquitetura yolov8 crewai pipeline agentes documentação"
+          role="listitem"
+        >
+          <div class="card-strip strip-documento"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">ARCHITECTURE.md</h2>
+              <span class="card-badge badge-documento">Documentação</span>
+            </div>
+            <p class="card-meta">Stack Multimodal · 2026</p>
+            <p class="card-desc">
+              Documento de arquitetura completo do stack YOLOv8 + CrewAI: agentes, pipeline frame a frame,
+              schema JSON de saída, dependências e melhorias avançadas.
+            </p>
+            <div class="card-tags">
+              <span class="tag">arquitetura</span>
+              <span class="tag">agentes</span>
+              <span class="tag">pipeline</span>
+              <span class="tag">JSON</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Atualizado em 2026</span>
+            <a class="card-link" href="multimodal-stack/ARCHITECTURE.md" aria-label="Abrir documento ARCHITECTURE.md">Abrir →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="documento"
+          data-title="README — Jornal Científico Nacional"
+          data-date="2024"
+          data-tags="readme documentação html css responsivo acessibilidade"
+          role="listitem"
+        >
+          <div class="card-strip strip-documento"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">README do Projeto</h2>
+              <span class="card-badge badge-documento">Documentação</span>
+            </div>
+            <p class="card-meta">HTML · CSS · Acessibilidade · 2024</p>
+            <p class="card-desc">
+              Guia completo do projeto: estrutura de pastas, tecnologias, acessibilidade WCAG,
+              breakpoints de responsividade, performance e como executar a página.
+            </p>
+            <div class="card-tags">
+              <span class="tag">guia</span>
+              <span class="tag">HTML</span>
+              <span class="tag">CSS</span>
+              <span class="tag">WCAG</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Atualizado em 2024</span>
+            <a class="card-link" href="../seteplayORIG/README-jornal.md" aria-label="Abrir README do projeto">Abrir →</a>
+          </div>
+        </article>
+
+        <article class="catalog-card"
+          data-category="documento"
+          data-title="SetplayCrew README — Configuração e Uso"
+          data-date="2026"
+          data-tags="readme setplay crewai configuração python dotenv"
+          role="listitem"
+        >
+          <div class="card-strip strip-documento"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">README SetplayCrew</h2>
+              <span class="card-badge badge-documento">Documentação</span>
+            </div>
+            <p class="card-meta">SetplayCrew · CrewAI · 2026</p>
+            <p class="card-desc">
+              Documentação de configuração e uso do SetplayCrew: variáveis de ambiente,
+              instalação de dependências e execução do agente de consultoria técnica.
+            </p>
+            <div class="card-tags">
+              <span class="tag">configuração</span>
+              <span class="tag">dotenv</span>
+              <span class="tag">CrewAI</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Atualizado em 2026</span>
+            <a class="card-link" href="../seteplayORIG/README.md" aria-label="Abrir README do SetplayCrew">Abrir →</a>
+          </div>
+        </article>
+
+        <!-- ── PROMPTS ── -->
+
+        <article class="catalog-card"
+          data-category="prompt"
+          data-title="Prompt Master YOLOv8 + CrewAI — Análise de Vídeo Frame a Frame"
+          data-date="2026"
+          data-tags="prompt yolov8 crewai vídeo análise frames detecção llm visão"
+          role="listitem"
+        >
+          <div class="card-strip strip-prompt"></div>
+          <div class="card-body">
+            <div class="card-header">
+              <h2 class="card-title">Prompt Master YOLO + CrewAI</h2>
+              <span class="card-badge badge-prompt">Prompt</span>
+            </div>
+            <p class="card-meta">YOLOv8 · CrewAI · LLM · 2026</p>
+            <p class="card-desc">
+              Prompt mestre de nível produção para análise de vídeo frame a frame: detecção com YOLOv8,
+              rastreamento via DeepSORT, transcrição Whisper e análise semântica com LLM Multimodal.
+            </p>
+            <div class="card-tags">
+              <span class="tag">YOLOv8</span>
+              <span class="tag">análise de vídeo</span>
+              <span class="tag">produção</span>
+              <span class="tag">LLM Vision</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-date">Criado em Abril/2026</span>
+            <a class="card-link" href="../seteplayORIG/PROMPT_MASTER_YOLO_CREWAI.md" aria-label="Abrir prompt master YOLOv8 + CrewAI">Abrir →</a>
+          </div>
+        </article>
+
+        <!-- Estado vazio (oculto por padrão via JS) -->
+        <div class="empty-state" id="empty-state" hidden aria-live="polite">
+          <p>📭 Nenhum item encontrado.</p>
+          <small>Tente outro termo de pesquisa ou selecione uma categoria diferente.</small>
+        </div>
+
+      </div><!-- fim catalog-grid -->
+    </main>
+
+    <!-- ===== RODAPÉ ===== -->
+    <footer class="footer">
+      <p>&copy; Jornal Científico Nacional</p>
+      <p>Catálogo de Publicações · Edição Especial 1950-2026 · Ciência, Tecnologia e Inovação</p>
+    </footer>
+
+  </div><!-- fim newspaper -->
+
+  <!-- ============================================================
+       SCRIPTS — pesquisa, filtros, ordenação
+       ============================================================ -->
+  <script>
+    'use strict';
+
+    /* ── Referências DOM ─────────────────────────────────────── */
+    const searchInput  = document.getElementById('search-input');
+    const filterBtns   = document.querySelectorAll('[data-filter]');
+    const sortSelect   = document.getElementById('sort-select');
+    const grid         = document.getElementById('catalog-grid');
+    const countNumber  = document.getElementById('count-number');
+    const emptyState   = document.getElementById('empty-state');
+
+    /* ── Estado ──────────────────────────────────────────────── */
+    let activeFilter = 'todos';
+    let searchQuery  = '';
+    let sortOrder    = 'default';
+
+    /* Coletar todos os cards no momento de carregamento */
+    const allCards = Array.from(grid.querySelectorAll('.catalog-card'));
+
+    /* ── Atualizar contagem de resultados ────────────────────── */
+    function updateCount(n) {
+      countNumber.textContent = n;
+    }
+
+    /* ── Aplicar pesquisa, filtro e ordenação ────────────────── */
+    function applyFilters() {
+      const q = searchQuery.toLowerCase().trim();
+
+      /* 1. Determinar quais cards passam nos critérios */
+      const visible = allCards.filter(function (card) {
+        const category = card.dataset.category || '';
+        const title    = (card.dataset.title  || '').toLowerCase();
+        const tags     = (card.dataset.tags   || '').toLowerCase();
+        const desc     = (card.querySelector('.card-desc') || {}).textContent || '';
+
+        const matchesFilter = activeFilter === 'todos' || category === activeFilter;
+        const matchesSearch = !q || title.includes(q) || tags.includes(q) || desc.toLowerCase().includes(q);
+
+        return matchesFilter && matchesSearch;
+      });
+
+      /* 2. Ordenar */
+      const sorted = visible.slice().sort(function (a, b) {
+        if (sortOrder === 'az') return (a.dataset.title || '').localeCompare(b.dataset.title || '', 'pt');
+        if (sortOrder === 'za') return (b.dataset.title || '').localeCompare(a.dataset.title || '', 'pt');
+        if (sortOrder === 'cat') return (a.dataset.category || '').localeCompare(b.dataset.category || '', 'pt');
+        return 0; /* default: ordem original do DOM */
+      });
+
+      /* 3. Aplicar visibilidade e reordenar no DOM */
+      allCards.forEach(function (card) { card.hidden = true; });
+
+      sorted.forEach(function (card) {
+        card.hidden = false;
+        grid.appendChild(card); /* reposiciona mantendo a ordem de sorted */
+      });
+
+      /* 4. Estado vazio */
+      emptyState.hidden = sorted.length > 0;
+      updateCount(sorted.length);
+    }
+
+    /* ── Eventos de pesquisa ─────────────────────────────────── */
+    searchInput.addEventListener('input', function () {
+      searchQuery = this.value;
+      applyFilters();
+    });
+
+    /* Limpar com tecla Escape */
+    searchInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        this.value = '';
+        searchQuery = '';
+        applyFilters();
+      }
+    });
+
+    /* ── Eventos de filtro por categoria ─────────────────────── */
+    filterBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activeFilter = this.dataset.filter;
+
+        filterBtns.forEach(function (b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+
+        this.classList.add('active');
+        this.setAttribute('aria-pressed', 'true');
+        applyFilters();
+      });
+    });
+
+    /* ── Eventos de ordenação ────────────────────────────────── */
+    sortSelect.addEventListener('change', function () {
+      sortOrder = this.value;
+      applyFilters();
+    });
+
+    /* ── Inicializar contagem ────────────────────────────────── */
+    applyFilters();
+  </script>
+
+</body>
+</html>

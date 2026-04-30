@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Player de análise de vídeo multimodal com YOLOv8, CrewAI e LLM." />
+  <title>Multimodal Video Player — YOLOv8 + CrewAI</title>
+  <style>
+    /* ============================================================
+       RESET E VARIÁVEIS
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-dark:    #0d1117;
+      --bg-card:    #161b22;
+      --bg-input:   #21262d;
+      --border:     #30363d;
+      --accent:     #238636;
+      --accent-hover: #2ea043;
+      --danger:     #da3633;
+      --warning:    #d29922;
+      --info:       #388bfd;
+      --text:       #e6edf3;
+      --text-muted: #8b949e;
+      --radius:     8px;
+      --shadow:     0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg-dark);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    a { color: var(--info); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ============================================================
+       LAYOUT PRINCIPAL
+       ============================================================ */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .app-header h1 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .app-header .badge {
+      font-size: 0.7rem;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-weight: 600;
+    }
+
+    .app-body {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      grid-template-rows: auto 1fr;
+      gap: 0;
+      height: calc(100vh - 50px);
+    }
+
+    /* ============================================================
+       ÁREA DO PLAYER (esquerda)
+       ============================================================ */
+    .player-section {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .player-wrapper {
+      position: relative;
+      background: #000;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Vídeo do player — funcionalidade core mantida intacta */
+    #main-video {
+      max-width: 100%;
+      max-height: 100%;
+      width: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Overlay de detecção (canvas sobreposto ao vídeo) */
+    #detection-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Status badge no canto superior esquerdo do player */
+    .player-status {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-dot.active { background: var(--accent); animation: pulse 1.5s infinite; }
+    .status-dot.paused { background: var(--warning); }
+    .status-dot.error  { background: var(--danger); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .status-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text);
+      background: rgba(0,0,0,0.6);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Barra de controles nativos do player */
+    .player-controls {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .player-controls input[type="file"] {
+      display: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-input);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn:hover  { background: #2d333b; border-color: #6e7681; }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.primary:hover { background: var(--accent-hover); }
+    .btn.danger  { background: var(--danger);  border-color: var(--danger);  color: #fff; }
+    .btn.danger:hover  { background: #b91c1c; }
+    .btn.warning { background: var(--warning); border-color: var(--warning); color: #000; }
+
+    .player-controls .spacer { flex: 1; }
+
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .confidence-row input[type="range"] {
+      width: 90px;
+      accent-color: var(--info);
+    }
+
+    #conf-val { color: var(--text); font-weight: 600; min-width: 30px; }
+
+    /* ============================================================
+       PAINEL DIREITO — AÇÕES + ARQUITETURA
+       ============================================================ */
+    .side-panel {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Abas */
+    .tab-bar {
+      display: flex;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .tab-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--info);
+    }
+
+    .tab-btn:hover { color: var(--text); }
+
+    .tab-content {
+      display: none;
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .tab-content.active { display: flex; flex-direction: column; gap: 12px; }
+
+    /* ---- Aba AÇÕES ---- */
+    .actions-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .actions-group-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+
+    .action-btn:hover { background: #2d333b; border-color: #6e7681; }
+    .action-btn .icon { font-size: 1rem; flex-shrink: 0; }
+
+    /* Log de saída */
+    .log-box {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.75rem;
+      color: #7ee787;
+      height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* ---- Aba ARQUITETURA ---- */
+    .arch-section { display: flex; flex-direction: column; gap: 14px; }
+
+    .arch-section h2 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 6px;
+    }
+
+    .arch-section h3 {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--info);
+      margin-bottom: 4px;
+    }
+
+    .arch-section p, .arch-section li {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .arch-section ul { padding-left: 16px; }
+
+    .agent-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+    }
+
+    .agent-table th {
+      background: var(--bg-input);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-align: left;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+    }
+
+    .agent-table td {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text);
+    }
+
+    .agent-table tr:hover td { background: var(--bg-input); }
+
+    .pipeline-flow {
+      background: #010409;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.7rem;
+      color: #79c0ff;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .arch-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      color: var(--info);
+    }
+
+    /* ============================================================
+       SCROLLBAR PERSONALIZADA
+       ============================================================ */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: #484f58; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6e7681; }
+
+    /* ============================================================
+       RESPONSIVIDADE
+       ============================================================ */
+    @media (max-width: 768px) {
+      .app-body {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto 1fr;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .player-section {
+        grid-column: 1;
+        grid-row: 1;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        min-height: 280px;
+      }
+
+      .side-panel {
+        grid-column: 1;
+        grid-row: 2;
+        height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== CABEÇALHO ===== -->
+  <header class="app-header">
+    <span>🎬</span>
+    <h1>Multimodal Video Player</h1>
+    <span class="badge">YOLOv8 + CrewAI</span>
+  </header>
+
+  <!-- ===== CORPO PRINCIPAL ===== -->
+  <div class="app-body">
+
+    <!-- ============================================================
+         SEÇÃO DO PLAYER (funcionalidade core)
+         ============================================================ -->
+    <section class="player-section" aria-label="Player de vídeo">
+
+      <div class="player-wrapper">
+        <!-- Vídeo principal -->
+        <video
+          id="main-video"
+          controls
+          preload="metadata"
+          aria-label="Vídeo em análise"
+        >
+
+          Seu navegador não suporta a tag de vídeo HTML5.
+        </video>
+
+        <!-- Canvas para overlay de detecção -->
+        <canvas id="detection-canvas" aria-hidden="true"></canvas>
+
+        <!-- Indicador de status do pipeline -->
+        <div class="player-status">
+          <span class="status-dot" id="status-dot" role="status" aria-live="polite"></span>
+          <span class="status-label" id="status-label">Aguardando vídeo</span>
+        </div>
+      </div>
+
+      <!-- Barra de controles do player -->
+      <div class="player-controls">
+        <label class="btn" for="video-input" title="Carregar arquivo de vídeo local">
+          📂 Abrir vídeo
+        </label>
+        <input
+          type="file"
+          id="video-input"
+          accept="video/*"
+          aria-label="Selecionar arquivo de vídeo"
+        />
+
+        <button class="btn primary" id="btn-start-analysis" title="Iniciar análise do pipeline">
+          ▶ Iniciar análise
+        </button>
+
+        <button class="btn danger" id="btn-stop-analysis" title="Parar análise do pipeline">
+          ⏹ Parar
+        </button>
+
+        <span class="spacer"></span>
+
+        <div class="confidence-row">
+          <label for="conf-slider">Confiança:</label>
+          <input
+            type="range"
+            id="conf-slider"
+            min="0.50"
+            max="1.00"
+            step="0.01"
+            value="0.80"
+            aria-label="Threshold de confiança"
+          />
+          <span id="conf-val">0.80</span>
+        </div>
+      </div>
+
+    </section>
+    <!-- fim player-section -->
+
+    <!-- ============================================================
+         PAINEL LATERAL — AÇÕES E ARQUITETURA
+         ============================================================ -->
+    <aside class="side-panel" aria-label="Painel lateral">
+
+      <!-- Abas -->
+      <div class="tab-bar" role="tablist">
+        <button
+          class="tab-btn active"
+          id="tab-acoes"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-acoes"
+        >⚡ Ações</button>
+        <button
+          class="tab-btn"
+          id="tab-arch"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-arch"
+        >🏗️ Arquitetura</button>
+        <button
+          class="tab-btn"
+          id="tab-log"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-log"
+        >📋 Log</button>
+      </div>
+
+      <!-- ---- ABA: AÇÕES ---- -->
+      <div id="panel-acoes" class="tab-content active" role="tabpanel" aria-labelledby="tab-acoes">
+
+        <div class="actions-group">
+          <p class="actions-group-title">🎯 Filtros de Detecção</p>
+          <button class="action-btn" data-action="focar-veiculos">
+            <span class="icon">🚗</span> Focar em veículos
+          </button>
+          <button class="action-btn" data-action="monitorar-pessoas">
+            <span class="icon">🧑</span> Monitorar apenas pessoas
+          </button>
+          <button class="action-btn" data-action="detectar-objetos-pequenos">
+            <span class="icon">🔍</span> Detectar objetos pequenos
+          </button>
+        </div>
+
+        <div class="actions-group">
+          <p class="actions-group-title">🔒 Segurança e Anomalias</p>
+          <button class="action-btn" data-action="comportamento-suspeito">
+            <span class="icon">⚠️</span> Detectar comportamento suspeito
+          </button>
+          <button class="action-btn" data-action="aumentar-sensibilidade">
+            <span class="icon">📡</span> Aumentar sensibilidade
+          </button>
+        </div>
+
+        <div class="actions-group">
+          <p class="actions-group-title">🗺️ Visualização</p>
+          <button class="action-btn" data-action="destacar-trajetorias">
+            <span class="icon">📍</span> Destacar trajetórias
+          </button>
+          <button class="action-btn" data-action="gerar-heatmap">
+            <span class="icon">🌡️</span> Gerar heatmap
+          </button>
+        </div>
+
+        <div class="actions-group">
+          <p class="actions-group-title">⚙️ Pipeline</p>
+          <button class="action-btn" data-action="pausar-analise">
+            <span class="icon">⏸️</span> Pausar análise
+          </button>
+          <button class="action-btn" data-action="retomar-analise">
+            <span class="icon">▶️</span> Retomar análise
+          </button>
+          <button class="action-btn" data-action="gerar-relatorio">
+            <span class="icon">📄</span> Gerar relatório agora
+          </button>
+          <button class="action-btn" data-action="zoom-objeto">
+            <span class="icon">🔎</span> Zoom em objeto rastreado
+          </button>
+        </div>
+
+      </div>
+      <!-- fim panel-acoes -->
+
+      <!-- ---- ABA: ARQUITETURA ---- -->
+      <div id="panel-arch" class="tab-content" role="tabpanel" aria-labelledby="tab-arch">
+        <div class="arch-section">
+
+          <h2>🏗️ Arquitetura Multimodal</h2>
+          <p>
+            Sistema multi-agente orquestrado por <strong>CrewAI</strong>, combinando detecção
+            com <strong>YOLOv8</strong>, rastreamento com <strong>DeepSORT</strong>,
+            transcrição com <strong>Whisper</strong> e análise semântica via
+            <strong>LLM Multimodal</strong>.
+            Consulte o arquivo completo em
+            <a class="arch-link" href="ARCHITECTURE.md" target="_blank" rel="noopener noreferrer">
+              📄 ARCHITECTURE.md
+            </a>.
+          </p>
+
+          <h3>🤖 Agentes</h3>
+          <table class="agent-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Agente</th>
+                <th>Ferramenta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Vision Agent</td><td>YOLOv8</td></tr>
+              <tr><td>2</td><td>Tracking Agent</td><td>DeepSORT / ByteTrack</td></tr>
+              <tr><td>3</td><td>Audio Agent</td><td>Whisper</td></tr>
+              <tr><td>4</td><td>Context Agent</td><td>LLM Multimodal</td></tr>
+              <tr><td>5</td><td>Optimization Agent</td><td>Ensemble + Heurísticas</td></tr>
+              <tr><td>6</td><td>Visualization Agent</td><td>OpenCV + Matplotlib</td></tr>
+            </tbody>
+          </table>
+
+          <h3>🔄 Pipeline</h3>
+          <div class="pipeline-flow" aria-label="Fluxo do pipeline de processamento">INPUT (vídeo / stream / voz)
+  └─▶ Pré-processamento
+        ├─▶ Detecção YOLOv8  ──▶ Tracking (DeepSORT)
+        └─▶ Análise de Áudio (Whisper)
+                │                       │
+                └──────────┬────────────┘
+                           ▼
+                   Análise Semântica (LLM)
+                           │
+                   Otimização (Ensemble)
+                           │
+                         SAÍDA
+               (overlay · JSON · heatmap · PDF)</div>
+
+          <h3>📊 Saída JSON por Frame</h3>
+          <ul>
+            <li><code>frame</code> — número do frame</li>
+            <li><code>timestamp_ms</code> — posição em milissegundos</li>
+            <li><code>objects[]</code> — lista de objetos detectados (bbox, id, confiança, velocidade)</li>
+            <li><code>scene</code> — contexto semântico da cena</li>
+            <li><code>audio</code> — transcrição e eventos sonoros</li>
+            <li><code>anomalies[]</code> — anomalias detectadas</li>
+            <li><code>heatmap_zone</code> — zona de maior movimentação</li>
+          </ul>
+
+          <h3>⚙️ Dependências Principais</h3>
+          <ul>
+            <li>crewai ≥ 0.28.0</li>
+            <li>ultralytics ≥ 8.0.0 (YOLOv8)</li>
+            <li>opencv-python ≥ 4.9.0</li>
+            <li>openai-whisper ≥ 20231117</li>
+            <li>deep-sort-realtime ≥ 1.3</li>
+            <li>torch ≥ 2.1.0</li>
+          </ul>
+
+        </div>
+      </div>
+      <!-- fim panel-arch -->
+
+      <!-- ---- ABA: LOG ---- -->
+      <div id="panel-log" class="tab-content" role="tabpanel" aria-labelledby="tab-log">
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:8px;">
+          Saída do pipeline em tempo real:
+        </p>
+        <div class="log-box" id="log-output" aria-live="polite" aria-label="Log do pipeline">$ aguardando início do pipeline...
+</div>
+        <button class="btn" id="btn-clear-log" style="align-self:flex-start;margin-top:4px;">
+          🗑️ Limpar log
+        </button>
+      </div>
+      <!-- fim panel-log -->
+
+    </aside>
+    <!-- fim side-panel -->
+
+  </div>
+  <!-- fim app-body -->
+
+  <!-- ============================================================
+       SCRIPTS — funcionalidades do player e ações
+       ============================================================ -->
+  <script>
+    'use strict';
+
+    /* ── Referências DOM ─────────────────────────────────────── */
+    const videoEl       = document.getElementById('main-video');
+    const videoInput    = document.getElementById('video-input');
+    const btnStart      = document.getElementById('btn-start-analysis');
+    const btnStop       = document.getElementById('btn-stop-analysis');
+    const confSlider    = document.getElementById('conf-slider');
+    const confVal       = document.getElementById('conf-val');
+    const statusDot     = document.getElementById('status-dot');
+    const statusLabel   = document.getElementById('status-label');
+    const logOutput     = document.getElementById('log-output');
+    const btnClearLog   = document.getElementById('btn-clear-log');
+
+    /* ── Estado do pipeline ──────────────────────────────────── */
+    let pipelineActive  = false;
+    let activeFilters   = new Set();
+    let confidenceThreshold = 0.80;
+
+    /* ── Utilitários ─────────────────────────────────────────── */
+    function setStatus(state, text) {
+      statusDot.className = 'status-dot ' + state;
+      statusLabel.textContent = text;
+    }
+
+    function appendLog(msg) {
+      const ts = new Date().toLocaleTimeString('pt-BR', { hour12: false });
+      logOutput.textContent += `[${ts}] ${msg}\n`;
+      logOutput.scrollTop = logOutput.scrollHeight;
+    }
+
+    /* ── Carregar vídeo ──────────────────────────────────────── */
+    videoInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      videoEl.src = url;
+      videoEl.load();
+      setStatus('', 'Vídeo carregado — pronto para análise');
+      appendLog(`Vídeo carregado: ${file.name} (${(file.size / 1048576).toFixed(2)} MB)`);
+    });
+
+    /* ── Controle de confiança ───────────────────────────────── */
+    confSlider.addEventListener('input', function () {
+      confidenceThreshold = parseFloat(this.value);
+      confVal.textContent = confidenceThreshold.toFixed(2);
+      if (pipelineActive) {
+        appendLog(`Threshold de confiança ajustado para ${confidenceThreshold.toFixed(2)}`);
+      }
+    });
+
+    /* ── Iniciar análise ─────────────────────────────────────── */
+    btnStart.addEventListener('click', function () {
+      if (!videoEl.src) {
+        appendLog('⚠ Nenhum vídeo carregado. Selecione um arquivo antes de iniciar.');
+        return;
+      }
+      pipelineActive = true;
+      setStatus('active', 'Pipeline ativo');
+      appendLog('Pipeline iniciado — confidence ≥ ' + confidenceThreshold.toFixed(2));
+      appendLog('Agentes ativos: Vision · Tracking · Audio · Context · Optimization · Visualization');
+      videoEl.play().catch(function (err) { appendLog('⚠ Erro ao reproduzir vídeo: ' + err.message); });
+    btnStop.addEventListener('click', function () {
+      pipelineActive = false;
+      setStatus('paused', 'Pipeline parado');
+      appendLog('Pipeline encerrado pelo usuário.');
+      videoEl.pause();
+    });
+
+    /* ── Limpar log ──────────────────────────────────────────── */
+    btnClearLog.addEventListener('click', function () {
+      logOutput.textContent = '$ log limpo\n';
+    });
+
+    /* ── Ações do painel lateral ─────────────────────────────── */
+    const actionMessages = {
+      'focar-veiculos':           ['Filtro ativado: veículos (car, truck, bus, motorcycle)', 'active'],
+      'monitorar-pessoas':        ['Filtro ativado: apenas pessoas + atributos', 'active'],
+      'detectar-objetos-pequenos':['Modo de alta resolução ativado para objetos < 32px', 'active'],
+      'comportamento-suspeito':   ['Módulo de anomalia comportamental ativado', 'active'],
+      'aumentar-sensibilidade':   ['Threshold reduzido para 0.65', 'active'],
+      'destacar-trajetorias':     ['Overlay de histórico de trajetórias habilitado', 'active'],
+      'gerar-heatmap':            ['Gerando heatmap de movimentação...', 'active'],
+      'pausar-analise':           ['Pipeline suspenso temporariamente', 'paused'],
+      'retomar-analise':          ['Pipeline retomado do ponto pausado', 'active'],
+      'gerar-relatorio':          ['Gerando relatório técnico do segmento atual...', 'active'],
+      'zoom-objeto':              ['Super-resolução ativada no objeto rastreado', 'active'],
+    };
+
+    document.querySelectorAll('[data-action]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const key = this.dataset.action;
+        const info = actionMessages[key];
+        if (!info) return;
+
+        appendLog('▶ Ação: ' + info[0]);
+
+        /* Ajuste especial de threshold para sensibilidade */
+        if (key === 'aumentar-sensibilidade') {
+          confSlider.value = '0.65';
+          confidenceThreshold = 0.65;
+          confVal.textContent = '0.65';
+        }
+        if (key === 'pausar-analise') {
+          pipelineActive = false;
+          videoEl.pause();
+          setStatus('paused', 'Pipeline pausado');
+        }
+        if (key === 'retomar-analise' && videoEl.src) {
+          pipelineActive = true;
+          videoEl.play().catch(function (err) { appendLog('⚠ Erro ao reproduzir vídeo: ' + err.message); });
+          setStatus('active', 'Pipeline ativo');
+        }
+
+        /* Feedback visual no botão */
+        const orig = btn.querySelector('.icon') ? btn.querySelector('.icon').textContent : '';
+        btn.style.borderColor = 'var(--accent)';
+        setTimeout(function () { btn.style.borderColor = ''; }, 800);
+      });
+    });
+
+    /* ── Navegação por abas ──────────────────────────────────── */
+    document.querySelectorAll('.tab-btn').forEach(function (tabBtn) {
+      tabBtn.addEventListener('click', function () {
+        const targetId = this.getAttribute('aria-controls');
+
+        document.querySelectorAll('.tab-btn').forEach(function (b) {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.tab-content').forEach(function (p) {
+          p.classList.remove('active');
+        });
+
+        this.classList.add('active');
+        this.setAttribute('aria-selected', 'true');
+        document.getElementById(targetId).classList.add('active');
+      });
+    });
+  </script>
+
+</body>
+</html>
