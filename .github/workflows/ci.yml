@@ -1,0 +1,65 @@
+name: CI — Valida e publica alterações
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  validate:
+    name: Validar projeto
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verificar sintaxe Python
+        run: |
+          PY_FILES=$(find . -name "*.py" ! -path "./.venv/*")
+          if [ -n "$PY_FILES" ]; then
+            echo "$PY_FILES" | xargs python -m py_compile && echo "✅ Sintaxe Python OK"
+          fi
+
+      - name: Validar HTML com vnu
+        continue-on-error: true
+        run: |
+          curl -sL https://github.com/validator/validator/releases/latest/download/vnu.jar -o /tmp/vnu.jar
+          java -jar /tmp/vnu.jar objetivos.html && echo "✅ HTML válido" || echo "⚠️ Avisos encontrados no HTML (não bloqueia)"
+
+  auto-update-readme:
+    name: Atualizar data no README
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    needs: validate
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Atualizar data de última modificação no README
+        run: |
+          TODAY=$(date '+%B %Y')
+          sed -i "s/\*\*Última atualização:\*\* .*/\*\*Última atualização:\*\* ${TODAY}/" README.md
+
+      - name: Commit da atualização de data (se houver mudança)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add README.md
+          if git diff --cached --quiet; then
+            echo "Nada a atualizar."
+          else
+            git commit -m "docs: atualizar data de última modificação no README [ci skip]"
+            git push
+          fi
